@@ -140,7 +140,7 @@ vim.opt.splitbelow = true
 --  See `:help 'list'`
 --  and `:help 'listchars'`
 vim.opt.list = true
-vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
+vim.opt.listchars = { tab = "  ", trail = "·", nbsp = "␣" }
 
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = "split"
@@ -150,6 +150,9 @@ vim.opt.cursorline = true
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
+
+vim.o.spell = true
+vim.o.spelllang = "en_us"
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -224,21 +227,34 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
 	-- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
 	"tpope/vim-sleuth", -- Detect tabstop and shiftwidth automatically
-	"xiyaowong/transparent.nvim",
-  "tpope/vim-fugitive",
   {
-    "okuuva/auto-save.nvim",
-    event = "VimEnter", -- optional for lazy loading on command
-    opts = {
-        trigger_events = { -- See :h events
-          immediate_save = { "BufLeave", "FocusLost","TextChangedI"}, -- vim events that trigger an immediate save
-          defer_save = { "InsertLeave","TextChanged","TextChangedI"} -- vim events that trigger a deferred save (saves after `debounce_delay`)
-      }
-    }
+    "xiyaowong/transparent.nvim",
+    config = function()
+      require("transparent").clear_prefix('BufferLine');
+      require("transparent").clear_prefix('NeoTree');
+      require("transparent").clear_prefix('lualine');
+    end,
+  },
+	"tpope/vim-fugitive",
+  "github/copilot.vim",
+  {
+    'akinsho/flutter-tools.nvim',
+    lazy = false,
+    dependencies = {
+        'nvim-lua/plenary.nvim',
+        'stevearc/dressing.nvim', -- optional for vim.ui.select
+    },
+    config = true,
   },
 	{
-		"simrat39/inlay-hints.nvim",
-		event = "VimEnter",
+		"okuuva/auto-save.nvim",
+		event = "VimEnter", -- optional for lazy loading on command
+		opts = {
+			trigger_events = { -- See :h events
+				immediate_save = { "BufLeave", "FocusLost", "TextChangedI" }, -- vim events that trigger an immediate save
+				defer_save = { "InsertLeave", "TextChanged", "TextChangedI" }, -- vim events that trigger a deferred save (saves after `debounce_delay`)
+			},
+		},
 	},
 	-- NOTE: Plugins can also be added by using a table,
 	-- with the first argument being the link and the following
@@ -251,7 +267,7 @@ require("lazy").setup({
 
 	-- "gc" to comment visual regions/lines
 	{ "numToStr/Comment.nvim", opts = {} },
-
+  {"tomlion/vim-solidity"},
 	-- Here is a more advanced example where we pass configuration
 	-- options to `gitsigns.nvim`. This is equivalent to the following lua:
 	--    require('gitsigns').setup({ ... })
@@ -260,6 +276,7 @@ require("lazy").setup({
 	{ -- Adds git related signs to the gutter, as well as utilities for managing changes
 		"lewis6991/gitsigns.nvim",
 		opts = {
+      current_line_blame = true,
 			signs = {
 				add = { text = "+" },
 				change = { text = "~" },
@@ -555,8 +572,6 @@ require("lazy").setup({
 				-- gopls = {},
 				-- pyright = {},
 				rust_analyzer = {},
-				omnisharp = {},
-        omnisharp_mono = {},
 				-- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
 				--
 				-- Some languages (like typescript) have entire language plugins that can be useful:
@@ -741,18 +756,51 @@ require("lazy").setup({
 		-- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`
 		"sainnhe/gruvbox-material",
 		lazy = false, -- make sure we load this during startup if it is your main colorscheme
-		priority = 1000, -- make sure to load this before all the other start plugins
-		config = function()
-			-- Load the colorscheme here.
-			-- Like many other themes, this one has different styles, and you could load
-			-- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-			vim.cmd.colorscheme("gruvbox-material")
-
-			-- You can configure highlights by doing something like
-			vim.cmd.hi("Comment gui=none")
-		end,
+		priority = 992, -- make sure to load this before all the other start plugins
+    config = function()
+      vim.cmd("colorscheme gruvbox-material")
+    end
 	},
-
+  {
+    'rose-pine/neovim',
+    priority = 998,
+  },
+  {
+    'phha/zenburn.nvim',
+    priority = 996,
+    config = function()
+      vim.cmd('colorscheme zenburn')
+    end
+  },
+  {
+    'junegunn/seoul256.vim',
+    priority = 995,
+    config = function()
+      vim.cmd('colorscheme seoul256')
+    end
+  },
+  {
+    'vim-scripts/darkburn',
+    priority = 997,
+    config = function()
+      vim.cmd('colorscheme darkburn')
+    end
+  },
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    priority = 993,
+    config = function()
+      vim.cmd('colorscheme catppuccin')
+    end
+  },
+  {
+    "savq/melange-nvim",
+    priority = 994,
+    config = function()
+      vim.cmd('colorscheme melange')
+    end
+  },
 	-- Highlight todo, notes, etc in comments
 	{
 		"folke/todo-comments.nvim",
@@ -812,6 +860,13 @@ require("lazy").setup({
 				auto_install = true,
 				highlight = { enable = true },
 				indent = { enable = true },
+        italics = {
+          comments = false,
+          keywords = false,
+          functions = false,
+          strings = false,
+          variables = false,
+        },
 			})
 
 			-- There are additional nvim-treesitter modules that you can use to interact
@@ -864,12 +919,10 @@ require("lazy").setup({
 })
 
 -- LSP Handlers
-vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-  vim.lsp.diagnostic.on_publish_diagnostics, {
-    -- delay update diagnostics
-    update_in_insert = true,
-  }
-)
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+	-- delay update diagnostics
+	update_in_insert = true,
+})
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
