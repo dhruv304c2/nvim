@@ -237,22 +237,22 @@ require("lazy").setup({
   },
 	"tpope/vim-fugitive",
   "github/copilot.vim",
-  {
-    'akinsho/flutter-tools.nvim',
-    lazy = false,
-    dependencies = {
-        'nvim-lua/plenary.nvim',
-        'stevearc/dressing.nvim', -- optional for vim.ui.select
-    },
-    config = true,
-  },
+  -- {
+  --   'akinsho/flutter-tools.nvim',
+  --   lazy = false,
+  --   dependencies = {
+  --       'nvim-lua/plenary.nvim',
+  --       'stevearc/dressing.nvim', -- optional for vim.ui.select
+  --   },
+  --   config = true,
+  -- },
 	{
 		"okuuva/auto-save.nvim",
 		event = "VimEnter", -- optional for lazy loading on command
 		opts = {
 			trigger_events = { -- See :h events
-				immediate_save = { "BufLeave", "FocusLost", "TextChangedI" }, -- vim events that trigger an immediate save
-				defer_save = { "InsertLeave", "TextChanged", "TextChangedI" }, -- vim events that trigger a deferred save (saves after `debounce_delay`)
+				immediate_save = { "BufLeave", "FocusLost", "TextChangedI", "TextChanged", "InsertLeave" }, -- vim events that trigger an immediate save
+				defer_save = { "InsertLeave", "TextChanged", "TextChangedI", "BufLeave", "FocusLost" }, -- vim events that trigger a deferred save (saves after `debounce_delay`)
 			},
 		},
 	},
@@ -571,7 +571,7 @@ require("lazy").setup({
 				-- clangd = {},
 				-- gopls = {},
 				-- pyright = {},
-				rust_analyzer = {},
+				-- rust_analyzer = {},
 				-- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
 				--
 				-- Some languages (like typescript) have entire language plugins that can be useful:
@@ -749,21 +749,21 @@ require("lazy").setup({
 		end,
 	},
 
-	{ -- You can easily change to a different colorscheme.
-		-- Change the name of the colorscheme plugin below, and then
-		-- change the command in the config to whatever the name of that colorscheme is
-		--
-		-- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`
-		"sainnhe/gruvbox-material",
-		lazy = false, -- make sure we load this during startup if it is your main colorscheme
-		priority = 992, -- make sure to load this before all the other start plugins
+	{
+    "sainnhe/gruvbox-material",
+		lazy = false,
+		priority = 992,
     config = function()
       vim.cmd("colorscheme gruvbox-material")
     end
 	},
   {
     'rose-pine/neovim',
-    priority = 998,
+    lazy = false,
+    priority = 990,
+    config = function()
+      vim.cmd('colorscheme rose-pine')
+    end
   },
   {
     'phha/zenburn.nvim',
@@ -789,14 +789,14 @@ require("lazy").setup({
   {
     "catppuccin/nvim",
     name = "catppuccin",
-    priority = 993,
+    priority = 992,
     config = function()
       vim.cmd('colorscheme catppuccin')
     end
   },
   {
     "savq/melange-nvim",
-    priority = 994,
+    priority = 991,
     config = function()
       vim.cmd('colorscheme melange')
     end
