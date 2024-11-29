@@ -811,7 +811,7 @@ require("mason-lspconfig").setup_handlers({
 	},
   {
     'rose-pine/neovim',
-    priority = 1000,
+    priority = 960,
     config = function()
       vim.cmd('colorscheme rose-pine-moon')
     end
@@ -839,7 +839,7 @@ require("mason-lspconfig").setup_handlers({
   },
   {
     "rebelot/kanagawa.nvim",
-    priority = 960,
+    priority = 999,
     config = function()
       vim.cmd('colorscheme kanagawa-dragon')
     end
